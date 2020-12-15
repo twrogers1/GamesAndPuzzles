@@ -1,0 +1,18 @@
+:Puzzle:
+J S O L U T I S
+S U N A R U U A
+N E P T U N E T
+S O N I E I S U
+R C E V T R E R
+A H T R A E S N
+M M E R C U R Y
+
+:Word Bank:
+Earth
+Jupiter
+Mars
+Mercury
+Neptune
+Saturn
+Uranus
+Venus

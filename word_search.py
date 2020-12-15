@@ -1,3 +1,4 @@
+import re
 from itertools import zip_longest
 
 
@@ -88,7 +89,7 @@ class Puzzle():
             return None
     
 
-    def _reverse(self, string: str):
+    def _reverse(self, string):
         """ Reverse the given :string: """
         return string[::-1]
 
@@ -134,7 +135,7 @@ class Puzzle():
          
 
     def solve(self):
-        """ Search character-by-character to find words. """
+        """ Search character-by-character to find words and solve the puzzle. """
         found = []
         for y, row in enumerate(self.grid):
             for x, _ in enumerate(row):
@@ -167,27 +168,25 @@ class Puzzle():
         return found_string
 
 
+def parse_input(inpt: str): 
+    """ Parse the given :inpt: in order to extract the puzzle grid and the word bank. """
+    # grid
+    grid_regex = re.compile(r":Puzzle:\n((?:\w.+\n?)+)")
+    grid = grid_regex.search(inpt).group(1)
+
+    # word bank
+    wordbank_regex = re.compile(r":Word Bank:\n((?:\w.+\n?)+)")
+    wordbank_match = wordbank_regex.search(inpt).group(1)
+    word_bank = [w.strip() for w in wordbank_match.split("\n") if w.strip() != ""]
+    
+    return grid, word_bank
+
+
 if __name__ == "__main__":
-    grid = """
-    J S O L U T I S
-    S U N A R U U A
-    N E P T U N E T
-    S O N I E I S U
-    R C E V T R E R
-    A H T R A E S N
-    M M E R C U R Y
-    """
-    word_bank = [w.strip() for w in """
-    Earth
-    Jupiter
-    Mars
-    Mercury
-    Neptune
-    Saturn
-    Uranus
-    Venus
-    Sun
-    """.split("\n") if w.strip() != ""]
+    with open("input.txt") as f:
+        inpt = f.read().strip()
+
+    grid, word_bank = parse_input(inpt)
 
     p = Puzzle(grid, word_bank)
     p.solve()
