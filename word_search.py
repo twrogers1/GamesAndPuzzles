@@ -1,3 +1,6 @@
+from itertools import zip_longest
+
+
 class Puzzle():
     def __init__(self, grid: str, word_bank: list):
         self.grid = self._make_grid(grid)
@@ -9,8 +12,8 @@ class Puzzle():
     def __str__(self):
         grid = self.grid.copy()
         
+        # set font weight for each character (if words have been found)
         if len(self._found_coords) > 0:
-            # set font weight for each character
             for y, row in enumerate(grid):
                 for x, char in enumerate(row):
                     if (y,x) in self._found_coords:
@@ -20,13 +23,22 @@ class Puzzle():
                     grid[y][x] = char
                 
         string = "\n-=  W o r d   S e a r c h  =-\n\n"
+        
+        # puzzle grid
         for row in grid:
             string += "\n"
-            string += "   ".join(row)
+            string += "  ".join(row)
             string += "\n"
-        string += "\n\nWord Bank:\n"
-        string += "- " + "\n- ".join(self.bank)
-        string += "\n"
+        
+        # word bank
+        string += f"\n\nWord Bank ({len(self.bank)} words):\n"
+        max_word_lenth = max(map(len, word_bank))
+        half = len(word_bank)//2 # half way between 
+        for l, r in zip_longest(word_bank[:half], word_bank[half:]):
+            if l is None: # handle the case where the right-list could be longer
+                l, r = r, ""
+            string += f"{l.ljust(int(max_word_lenth*1.5), ' ')}\t{r}\n"
+        
         return string
 
 
@@ -137,8 +149,9 @@ class Puzzle():
                 for deltay, deltax in scans:
                     found.extend(self._scan(y,x, deltay,deltax))
     
+        found.sort()
         found_string_parts = []
-        found_string_parts.append(f"Found {len(found)} words in {self._counter*2:,} searches:")
+        found_string_parts.append(f"Found {'all ' if len(found) >= len(self.bank) else ''}{len(found) if len(found) <= len(self.bank) else len(self.bank)} words in {self._counter*2:,} searches:")
         for f in found:
             word, start, end = f
             green_word = "\033[32m" + word.title() + "\033[39m"
@@ -173,6 +186,7 @@ if __name__ == "__main__":
     Saturn
     Uranus
     Venus
+    Sun
     """.split("\n") if w.strip() != ""]
 
     p = Puzzle(grid, word_bank)
