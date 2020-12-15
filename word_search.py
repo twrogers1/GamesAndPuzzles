@@ -14,7 +14,7 @@ class Puzzle():
             for y, row in enumerate(grid):
                 for x, char in enumerate(row):
                     if (y,x) in self._found_coords:
-                        char = "\033[1m" + "\033[3m" + char.upper() + "\033[0m" # bold, italics, upper
+                        char = "\033[1m" + "\033[32m" + char.upper() + "\033[39m" + "\033[0m" # bold, green, upper, color reset, font reset
                     else:
                         char = "\033[2m" + char.lower() + "\033[0m" # light, lower
                     grid[y][x] = char
@@ -141,7 +141,8 @@ class Puzzle():
         found_string_parts.append(f"Found {len(found)} words in {self._counter*2:,} searches:")
         for f in found:
             word, start, end = f
-            found_string_parts.append(f"- {word} found between ({start[0]+1},{start[1]+1}) and ({end[0]+1},{end[1]+1}).")
+            green_word = "\033[32m" + word.title() + "\033[39m"
+            found_string_parts.append(f"- {green_word} found between ({start[0]+1},{start[1]+1}) and ({end[0]+1},{end[1]+1}).")
         found_string_parts.append("\n* Coordinates start in the top-left corner! The first letter is (x=1,y=1)")
         found_string_parts.append("* As x increases, move right. As y increases, move down.")
         found_string_parts.append("\n\n")
