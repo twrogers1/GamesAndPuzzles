@@ -1,5 +1,7 @@
 # Word Search
-Solve a word search using the built-in Python libraries.
+Solve a word search using the built-in Python libraries. Pretty print to the terminal.
+
+Currently works in Mac OSX Terminal. For Windows users, the VS Code Terminal also works.
   
 # Setup
 The script will read from the `intput.txt` file, located in the same directory as the `word_search.py` file. The input file consists of two sections, `:Puzzle:` and `:Word Bank:`
