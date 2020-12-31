@@ -62,9 +62,9 @@ class NameGame():
     def _remove_from_bank(self, name):
         """ Internal method - Take the given :name: and remove it from self.name_bank """ 
         name = name.lower()
-        letter = name[0]
-        self.name_bank[letter].remove(name.lower())
-
+        letter = name[0] 
+        if name in self.name_bank[letter]:
+            self.name_bank[letter].remove(name.lower())
 
     def _choose_random_name(self, letter, remove=True):
         """ Internal method - Choose a random name from the self.name_bank (and by defualt, :remove: it) for the given :letter: """        
@@ -132,15 +132,14 @@ class NameGame():
                     continue
 
                 # name can't have been played previously
-                if name in self.played:
-                    print("!! Name was already plaed. Try another.")
+                if name.lower() in [p.lower() for p in self.played]:
+                    print("!! Name was already played. Try another.")
                     name = None
                     continue
-                
-
         except KeyboardInterrupt:
             return None
         
+        self._remove_from_bank(name) # don't let CPU choose this name
         return name
     
 
