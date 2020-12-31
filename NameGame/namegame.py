@@ -5,30 +5,39 @@ from collections import defaultdict
 
 
 class NameGame():
-    __RULES__ = """
-    -= N A M E   G A M E =-
-    
-    Rules:
-    - Players take turns naming people, typically celebrities
-    - The named person must have a first and last name (In other words, Seal isn't a valid choice)
-    - The choice on turn 1 can be any person. In this script, it's chosen by the CPU randomly
-    - For the choices on turn 2 and after, the first letter of the first name must start with the first letter of the last name from the prior choice.
-        (For example, if James Bond was chosen on turn 1, Bruce Wayne would be a valid choice on turn 2, Walter White would be a valid choice on turn 3, and so on)
-    - Names cannot be repeated
-    - The game ends when players run out of choices
-
-    Pro Tips:
-    - Try to remember names (lelz)
-    - The scope of the people bank can be expanded however you like
-        - Try using fictional characters, authors, or people you know IRL
-
-    Good luck!
-
-    (During your turn, type 'q' or 'quit' to quit.)
-    """
     def __init__(self):
         self.name_bank = self._parse_names() # word bank for the CPU player - stored in lowercase
         self.played = [] # names already played - stored in lowercase
+
+
+    @property
+    def __file__(self):
+        return "names.txt"
+
+
+    @property
+    def __rules__(self):
+        return """
+        -= N A M E   G A M E =-
+        
+        Rules:
+        - Players take turns naming people, typically celebrities
+        - The named person must have a first and last name (In other words, Seal isn't a valid choice)
+        - The choice on turn 1 can be any person. In this script, it's chosen by the CPU randomly
+        - For the choices on turn 2 and after, the first letter of the first name must start with the first letter of the last name from the prior choice.
+            (For example, if James Bond was chosen on turn 1, Bruce Wayne would be a valid choice on turn 2, Walter White would be a valid choice on turn 3, and so on)
+        - Names cannot be repeated
+        - The game ends when players run out of choices
+
+        Pro Tips:
+        - Try to remember names (lelz)
+        - The scope of the people bank can be expanded however you like
+            - Try using fictional characters, authors, or people you know IRL
+
+        Good luck!
+
+        (During your turn, type 'q' or 'quit' to quit.)
+        """
 
 
     def __str__(self):
@@ -49,7 +58,7 @@ class NameGame():
     def _parse_names(self):
         """ Internal method - Read in the names.txt file and parse them to a defaultdict, where the keys are the beginning letter of the first names. """
         name_bank = defaultdict(set)
-        with open("names.txt", "r") as f:
+        with open(self.__file__, "r") as f:
             for name in f.readlines():
                 name = name.strip().lower()
                 if name != "":
@@ -57,14 +66,35 @@ class NameGame():
                     name_bank[letter].add(name)
            
         return name_bank
+
+
+    def _store_names(self):
+        """ 
+        Internal method - Learn from the player.
+        Once the game is over, write the self.played names to the __file__, so the CPU can usDe them next time.
+        """
+        # seed with the names from the file, add the played names, dedupe, sort, and write to file
+        with open(self.__file__, "r") as f:
+            names =  f.readlines()
+
+        names.extend(self.played)
+        names = [n.lower().replace("\n", "") for n in names]
+        names = sorted(list(set(names)))
+
+        with open(self.__file__, "w") as f:
+            for n in names:
+                f.write(n.title()+"\n")
+        
+        return 
     
-    
+
     def _remove_from_bank(self, name):
         """ Internal method - Take the given :name: and remove it from self.name_bank """ 
         name = name.lower()
         letter = name[0] 
         if name in self.name_bank[letter]:
             self.name_bank[letter].remove(name.lower())
+
 
     def _choose_random_name(self, letter, remove=True):
         """ Internal method - Choose a random name from the self.name_bank (and by defualt, :remove: it) for the given :letter: """        
@@ -158,7 +188,7 @@ class NameGame():
                 self.played.append(name.lower())
                 letter = self.parse_last_name(name)
         elif players == 1:
-            print(NameGame.__RULES__)
+            print(self.__rules__)
             your_turn = False
             while True:
                 name = self.get_name_input(letter=letter) if your_turn else self._choose_random_name(letter)
@@ -177,6 +207,7 @@ class NameGame():
                     your_turn = not your_turn # flip back and forth between yours and the computer's turn    
         
         print(self)
+        self._store_names()
         
             
 if __name__ == "__main__":
