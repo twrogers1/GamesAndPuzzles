@@ -1,6 +1,11 @@
 from itertools import permutations
 from collections import Counter
 
+try:
+    from nltk.corpus import words
+except ModuleNotFoundError:
+    print("!! Module not found. Please run the setup.py file.")
+
 
 class Wordscapes():
     """ Simple class to provided guesses for the hidden word """
@@ -10,10 +15,16 @@ class Wordscapes():
             self.word = list(word.upper())
         if found:
             self.found = [x.strip() for x in list(found.upper().split(","))]
+        self.dictionary = set(words.words())
+
+
+    def _is_word(self, word):
+        """ """
+        return True if word.lower() in self.dictionary else False
     
 
     def guess(self):
-        """ Create a list of 'valid' guesses in a list. """
+        """ Create a list of 'valid' guesses. """
         guesses = []
         char_indexes = dict([(i,l) for i,l in enumerate(self.word) if l != "_"])
         for p in permutations(self.bank, len(self.word)):
@@ -27,6 +38,10 @@ class Wordscapes():
             if not any(v in p for v in list("AEIOU")):
                 continue
 
+            # ensure this permutation has at least one consanent
+            if not any(v in p for v in list("BCDFGHJKLMNPQRSTVWXYZ")):
+                continue
+
             # ensure the hard-coded characters are in place for this permutation
             skip = False
             for k,v in char_indexes.items():
@@ -36,14 +51,18 @@ class Wordscapes():
             if skip:
                 continue
 
+            # see if the guess is a valid word
+            if not self._is_word(guess):
+                continue
+
             guesses.append(guess)
         
         return guesses
 
 
 if __name__ == "__main__":
-    bank = "OIAPN" # given word bank
-    word = "P_A__" # word to guess. Use _ for blanks
+    bank = "NTSIA" # given word bank
+    word = "__T" # word to guess. Use _ for blanks
     found = "" # csv of words already found, optional
 
     WS = Wordscapes(bank, word=word)
