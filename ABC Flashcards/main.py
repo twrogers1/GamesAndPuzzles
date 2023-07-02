@@ -3,13 +3,15 @@ from string import ascii_lowercase, ascii_uppercase
 from turtle import Screen, Turtle
 
 from colors import Dracula
+from words import get_word_bank
 
 
 # configs
 ALPHABET = list(map(lambda x: x[0] + x[1], zip(ascii_uppercase, ascii_lowercase)))  # Aa Bb Cc
 NUMBERS = list(range(1, 101))
+WORDS = get_word_bank()
 SHUFFLE = True  # whether to shuffle up the items
-SAMPLE = -1  # how many items to quiz with (use -1 for no limit)
+SAMPLE = 10  # how many items to quiz with (use -1 for no limit)
 BACKGROUND_COLOR = Dracula.Background
 TEXT_COLOR = Dracula.Green
 
@@ -29,7 +31,7 @@ def quiz(
         check_guess: bool = True
 ) -> None:
     """
-    Use Turtle to quiz for accuracy with the given items
+    Use Turtle to quiz for accuracy with the given items.
 
     Args:
         s: Screen instance
@@ -55,6 +57,8 @@ def quiz(
                 correct += guess(x[0])  # assumes this is the alphabet, just use the first letter to circumvent "Aa" format
             else:
                 correct += guess(x)
+        else:
+            input("(Press Enter to continue) ")
         wipe_screen(s)
         
         if sample_size > 0 and i >= sample_size:
@@ -91,5 +95,7 @@ if __name__ == "__main__":
     t.sety(-font_size/2)
     FONT = ("Times", font_size, "bold")
     
+    # quizes
     quiz(s, t, ALPHABET, sample_size=SAMPLE, shuffle=SHUFFLE, check_guess=True)
     quiz(s, t, NUMBERS, sample_size=SAMPLE, shuffle=SHUFFLE, check_guess=True)
+    quiz(s, t, WORDS, sample_size=-1, shuffle=SHUFFLE, check_guess=False)
